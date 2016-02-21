@@ -1,0 +1,4 @@
+/.vagrant
+/target
+/vagrant/key.pem
+/vagrant/cert.pem

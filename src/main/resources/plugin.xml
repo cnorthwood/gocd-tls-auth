@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<go-plugin id="tls-auth" version="1">
+    <about>
+        <name>TLS Client Certificate Authenticator</name>
+        <version>1.0</version>
+        <target-go-version>15.2.0</target-go-version>
+        <description>Allows users to login with a TLS client certificate</description>
+        <vendor>
+            <name>Chris Northwood</name>
+            <url>https://github.com/cnorthwood/gocd-tls-auth</url>
+        </vendor>
+    </about>
+</go-plugin>
