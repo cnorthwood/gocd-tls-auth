@@ -1,6 +1,8 @@
 Go.CD TLS Client Certificate Authenticator
 ==========================================
 
+[![Build Status](https://travis-ci.org/cnorthwood/gocd-tls-auth.svg?branch=master)](https://travis-ci.org/cnorthwood/gocd-tls-auth)
+
 This plugin allows users to be authenticated by TLS client certificates, when
 Go.CD is behind a reverse proxy which terminates TLS and passes through the
 certificate details in HTTP headers.
