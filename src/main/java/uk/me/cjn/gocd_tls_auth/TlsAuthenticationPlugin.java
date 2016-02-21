@@ -9,7 +9,6 @@ import com.thoughtworks.go.plugin.api.exceptions.UnhandledRequestTypeException;
 import com.thoughtworks.go.plugin.api.logging.Logger;
 import com.thoughtworks.go.plugin.api.request.GoApiRequest;
 import com.thoughtworks.go.plugin.api.request.GoPluginApiRequest;
-import com.thoughtworks.go.plugin.api.response.GoApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
@@ -26,6 +25,7 @@ import java.util.Map;
 public class TlsAuthenticationPlugin implements GoPlugin {
 
     private static final String SSL_CLIENT_CERTIFICATE_SUBJECT = "SSL_CLIENT_S_DN";
+    private static final String SSL_CLIENT_CERTIFICATE_VERIFY = "SSL_CLIENT_VERIFY";
 
     private static Logger LOGGER = Logger.getLoggerFor(TlsAuthenticationPlugin.class);
 
@@ -55,13 +55,23 @@ public class TlsAuthenticationPlugin implements GoPlugin {
         }
     }
 
-    private GoPluginApiResponse handleAuthenticateRequest(GoPluginApiRequest goPluginApiRequest) {
-        if (goPluginApiRequest.requestHeaders() != null && goPluginApiRequest.requestHeaders().containsKey(SSL_CLIENT_CERTIFICATE_SUBJECT)) {
-            authenticateUser(goPluginApiRequest.requestHeaders().get(SSL_CLIENT_CERTIFICATE_SUBJECT));
-        } else {
-            LOGGER.error("No SSL certificate header " + SSL_CLIENT_CERTIFICATE_SUBJECT + " in request.");
+    private GoPluginApiResponse handleAuthenticateRequest(GoPluginApiRequest request) {
+        try {
+            String clientVerify = getHeader(request, SSL_CLIENT_CERTIFICATE_VERIFY);
+            if (clientVerify.equalsIgnoreCase("success")) {
+                authenticateUser(getHeader(request, SSL_CLIENT_CERTIFICATE_SUBJECT));
+            }
+        } catch (IllegalArgumentException e) {
+            LOGGER.error("No SSL certificate header " + SSL_CLIENT_CERTIFICATE_SUBJECT + " or " + SSL_CLIENT_CERTIFICATE_VERIFY + " in request.");
         }
         return redirectToHomePage();
+    }
+
+    private String getHeader(GoPluginApiRequest request, String header) throws IllegalArgumentException {
+        if (request.requestHeaders() == null || !request.requestHeaders().containsKey(header)) {
+            throw new IllegalArgumentException();
+        }
+        return request.requestHeaders().get(header);
     }
 
     private void authenticateUser(String certificateSubject) {

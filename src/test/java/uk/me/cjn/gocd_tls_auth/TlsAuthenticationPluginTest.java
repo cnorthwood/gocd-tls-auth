@@ -81,7 +81,7 @@ public class TlsAuthenticationPluginTest {
 
     @Test
     public void accessingLoginPageAuthenticatesUserWithCertificateDetails() throws Exception {
-        makeLoginRequest(SSL_SUBJECT);
+        makeLoginRequest(SSL_SUBJECT, "SUCCESS");
         GoApiRequest apiRequest = captureApiRequest();
 
         assertThat(apiRequest.api(), is("go.processor.authentication.authenticate-user"));
@@ -95,8 +95,15 @@ public class TlsAuthenticationPluginTest {
     }
 
     @Test
+    public void loggingInWithoutValidCertificatesDoesNotAuthenticateUser() throws Exception {
+        makeLoginRequest(SSL_SUBJECT, "NONE");
+
+        assertApiRequestNeverMade();
+    }
+
+    @Test
     public void emailFromSubjectIsUsedAsUsernameAndEmailId() throws Exception {
-        makeLoginRequest(SSL_SUBJECT);
+        makeLoginRequest(SSL_SUBJECT, "SUCCESS");
         GoApiRequest apiRequest = captureApiRequest();
 
         assertThat(getUserFromApiRequest(apiRequest).get("username"), is("cnorthwood@gmail.com"));
@@ -105,7 +112,7 @@ public class TlsAuthenticationPluginTest {
 
     @Test
     public void cnFromSubjectIsUsedAsDisplayName() throws Exception {
-        makeLoginRequest(SSL_SUBJECT);
+        makeLoginRequest(SSL_SUBJECT, "SUCCESS");
         GoApiRequest apiRequest = captureApiRequest();
 
         assertThat(getUserFromApiRequest(apiRequest).get("display-name"), is("Chris Northwood"));
@@ -113,13 +120,13 @@ public class TlsAuthenticationPluginTest {
 
     @Test
     public void malformedSubjectDoesNotAuthenticateUser() throws Exception {
-        makeLoginRequest("I am not a valid subject");
+        makeLoginRequest("I am not a valid subject", "SUCCESS");
         assertApiRequestNeverMade();
     }
 
     @Test
     public void missingCNOrEmailDoesNotAuthenticateUser() throws Exception {
-        makeLoginRequest("C=GB");
+        makeLoginRequest("C=GB", "SUCCESS");
         assertApiRequestNeverMade();
     }
 
@@ -145,9 +152,10 @@ public class TlsAuthenticationPluginTest {
         return tlsAuthenticationPlugin.handle(buildRequest("index"));
     }
 
-    private GoPluginApiResponse makeLoginRequest(String sslSubject) throws UnhandledRequestTypeException {
+    private GoPluginApiResponse makeLoginRequest(String sslSubject, String sslVerify) throws UnhandledRequestTypeException {
         Map<String, String> headersMap = new HashMap<>();
         headersMap.put("SSL_CLIENT_S_DN", sslSubject);
+        headersMap.put("SSL_CLIENT_VERIFY", sslVerify);
         return tlsAuthenticationPlugin.handle(buildRequest("index", headersMap));
     }
 
