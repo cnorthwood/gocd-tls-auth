@@ -4,21 +4,22 @@ Go.CD TLS Client Certificate Authenticator
 [![Build Status](https://travis-ci.org/cnorthwood/gocd-tls-auth.svg?branch=master)](https://travis-ci.org/cnorthwood/gocd-tls-auth)
 
 This plugin allows users to be authenticated by TLS client certificates, when
-Go.CD is behind a reverse proxy which terminates TLS and passes through the
+GoCD is behind a reverse proxy which terminates TLS and passes through the
 certificate details in HTTP headers.
 
 Deploying
 ---------
 
-To start with, you'll need to [configure your Go server to use password
-authentication](https://www.go.cd/documentation/user/current/configuration/dev_authentication.html).
+The GoCD docs are a good intro to how authentication works: https://docs.gocd.org/current/configuration/dev_authentication.html 
 
 You'll also need to configure Apache or something to terminate your SSL
 connections and reverse proxy it through to Go. Apache will need to make the
 certificate CN available to the upstream server under the "SSL_CLIENT_S_DN"
-header. Adding a line such as below to your Apache config file will allow this:
+header. You will also need to pass the verify state through. Adding lines
+such as below to your Apache config file will allow this:
 
     RequestHeader set SSL_CLIENT_S_DN "%{SSL_CLIENT_S_DN}s"
+    RequestHeader set SSL_CLIENT_VERIFY "%{SSL_CLIENT_VERIFY}s"
    
 The httpd.conf in the apache-config folder shows a complete sample configuration.
 

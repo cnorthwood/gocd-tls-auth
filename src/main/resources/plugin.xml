@@ -3,7 +3,7 @@
     <about>
         <name>TLS Client Certificate Authenticator</name>
         <version>2.0.0</version>
-        <target-go-version>17.5.0</target-go-version>
+        <target-go-version>17.9.0</target-go-version>
         <description>Allows users to login with a TLS client certificate</description>
         <vendor>
             <name>Chris Northwood</name>

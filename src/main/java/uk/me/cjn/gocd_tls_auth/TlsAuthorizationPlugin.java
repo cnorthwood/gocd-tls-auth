@@ -141,7 +141,8 @@ public class TlsAuthorizationPlugin implements GoPlugin {
     }
 
     private GoPluginApiResponse handleAuthenticateRequest(GoPluginApiRequest request) {
-        Map<String, String> suppliedCredentials = gson.fromJson(request.requestBody(), Map.class);
+        Map<String, Object> requestBody = gson.fromJson(request.requestBody(), Map.class);
+        Map<String, String> suppliedCredentials = (Map<String, String>) requestBody.get("credentials");
         String sslVerify = suppliedCredentials.get("SSL_VERIFY");
         String sslSubject = suppliedCredentials.get("SSL_SUBJECT");
 

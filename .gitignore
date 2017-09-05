@@ -1,4 +1,4 @@
 /.vagrant
 /target
-/vagrant/key.pem
-/vagrant/cert.pem
+/apache-config/key.pem
+/apache-config/cert.pem

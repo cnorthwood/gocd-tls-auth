@@ -178,8 +178,10 @@ public class TlsAuthorizationPluginTest {
 
     private GoPluginApiResponse makeFetchAccessTokenRequest(final String sslSubject, final String sslVerify) throws UnhandledRequestTypeException {
         Map<String, Object> requestBody = new HashMap<>();
-        requestBody.put("SSL_SUBJECT", sslSubject);
-        requestBody.put("SSL_VERIFY", sslVerify);
+        Map<String, String> credentials = new HashMap<>();
+        credentials.put("SSL_SUBJECT", sslSubject);
+        credentials.put("SSL_VERIFY", sslVerify);
+        requestBody.put("credentials", credentials);
         return tlsAuthorizationPlugin.handle(buildRequest("go.cd.authorization.authenticate-user", null, requestBody));
     }
 
